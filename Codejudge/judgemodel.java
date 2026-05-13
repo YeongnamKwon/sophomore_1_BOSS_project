@@ -15,7 +15,7 @@ public class judgemodel {
 
         	Users_answercode user = new Users_answercode();
 
-            Files.write( Paths.get("Main.java"),user.User_code.getBytes());
+            Files.write( Paths.get("Users_answercode.java"),user.User_code.getBytes());
 
             System.out.println("파일 생성 완료");
 
