@@ -1,5 +1,6 @@
 package Backend;
 
+//채점 후 결과 저장
 public class SubmitRequest {
     private String sourceCode; // 제출한 소스코드
     private String input; // 입력값
