@@ -42,7 +42,7 @@ public class judgemodel {
                         System.out.println("=============================\n");
                     } 
                 	else {
-                    	System.out.println("오답입니다.");
+                    	System.out.println("Testcase " + ++count + " : 오답");
                     	System.out.println("시스템 정답 : " + tc.answer);
                     	System.out.println("실행 결과 : " + runResult.output);
                         System.out.println("=============================\n");
