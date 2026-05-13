@@ -13,12 +13,12 @@ public class judgemodel {
 
         try {
         	Users_answercode user = new Users_answercode();
-            Files.write( Paths.get("Users_answercode.java"), user.User_code.getBytes());
+            Files.write(Paths.get("Users_answercode.java"), user.User_code.getBytes());
             compiler com = new compiler();
             boolean success = com.compile();
 
             if(success) {	
-            	System.out.println("컴파일 성공");
+            	System.out.println("컴파일 성공\n");
             	testcasemanager manager = new testcasemanager();
                 List<testcase> tests = manager.getTests();
                 
@@ -37,12 +37,15 @@ public class judgemodel {
                 	boolean judgeResult = j.check(runResult.output, tc.answer);
                 	if(judgeResult) {
                     	System.out.println("Testcase " + ++count + ": 정답");
-                        System.out.printf("실행 시간 : %.6f s\n\n", runResult.runningTime / 1000000000.0);
+                        System.out.printf("메모리 사용량 : %.2f MB%n", runResult.memory / 1024.0 / 1024.0);
+                        System.out.printf("실행 시간 : %.6f s\n", runResult.runningTime / 1000000000.0);
+                        System.out.println("=============================\n");
                     } 
                 	else {
                     	System.out.println("오답입니다.");
                     	System.out.println("시스템 정답 : " + tc.answer);
                     	System.out.println("실행 결과 : " + runResult.output);
+                        System.out.println("=============================\n");
                     	break;
                     }
                 }

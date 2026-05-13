@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class runner {
     static Logger log = Logger.getLogger("Judge");
-    
+
     public errormanager run(String input) {
         errormanager runResult = new errormanager();
         try {
@@ -31,7 +31,7 @@ public class runner {
 
             if(!finished) {
                 process.destroy();
-                runResult .timeout = true;
+                runResult.timeout = true;
                 return runResult;
             }
             
@@ -52,6 +52,9 @@ public class runner {
             long end = System.nanoTime();
             runResult.runningTime = (end - start);
             
+            Runtime runtime = Runtime.getRuntime();
+            runResult.memory = runtime.totalMemory() - runtime.freeMemory();
+            
             if(error.length() > 0) {
             	runResult.runtimeError = true;
                 runResult.errorMessage = error.toString();
@@ -64,7 +67,7 @@ public class runner {
             return runResult;
 
         } catch (Exception e) {
-            log.severe("Error : "+ e + "\nLocation : " + e.getStackTrace()[0]);
+            log.severe(String.format("Error : %s%nLocation : %s",e,e.getStackTrace()[0]));
             return runResult;
         }
     }
