@@ -75,5 +75,25 @@
             <button onelick="login()">로그인</button>
         </div>
 
+        <script>
+            function login() {
+                const id = document.getElementById('id').value.trin();
+                const pw = document.getElementById('pw').value.trim();
+                const error = document.getElementById('error');
+
+                if (!id || !pw) {
+                    error.style.display = 'block';
+                    return;
+                }
+
+                error.style.display = 'none';
+                // TODO : 로그인 성공 하면 이동할 페이지임.
+                window.location.href = 'problems.html';
+            }
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Enter') login();
+            });
+        </script>
     </body>
 </html>
