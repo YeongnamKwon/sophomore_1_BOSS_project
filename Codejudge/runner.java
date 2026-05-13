@@ -14,6 +14,12 @@ public class runner {
 
             Process process = pb.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedWriter writer =new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+            writer.write("1 2");
+            writer.newLine();
+
+            writer.flush();
+            writer.close();
             
             StringBuilder output = new StringBuilder();
 
