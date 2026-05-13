@@ -138,6 +138,22 @@
                 }
 
                 error.style.display = 'none';
+
+                localStorage.setItem('currentStudentId', id);
+
+            const userKey = `student_${id}`;
+            const existingData = localStorage.getItem(userKey);
+
+            if (!existingData) {
+                const initialData = {
+                    studentId: id,
+                    selectedProblem: "",
+                    submittedCode: "",
+                    result: ""
+                };
+                localStorage.setItem(userKey, JSON.stringify(initialData));
+            }
+
                 window.location.href = 'problems.html';
             }
 
