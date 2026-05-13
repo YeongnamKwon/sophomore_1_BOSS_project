@@ -88,23 +88,20 @@
         <div class="box">
             <!-- 3.요청하신 상단 문구 추가 -->
              <div class="header-group">
-                <h2>로그인</h2>
-                <p>학번과 비밀번호를 입력하세요.</p>
+                <h2>Code Judge Program</h2>
+                <p>학번을 입력하세요.</p>
              </div>
-
             <input type="text" id="id" placeholder="학번" />
-            <input type="password" id="pw" placeholder="비밀번호" />
-            <div class="error" id="error">학번 또는 비밀번호가 맞지 않습니다.</div>
+            <div class="error" id="error">학번이 맞지 않습니다.</div>
             <button onelick="login()">로그인</button>
         </div>
 
         <script>
             function login() {
                 const id = document.getElementById('id').value.trin();
-                const pw = document.getElementById('pw').value.trim();
                 const error = document.getElementById('error');
 
-                if (!id || !pw) {
+                if (!id) {
                     error.style.display = 'block';
                     return;
                 }
