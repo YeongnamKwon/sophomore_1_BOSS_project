@@ -2,7 +2,7 @@ package User_answer;
 
 public class Users_answercode {
 
-	String User_code = """
+	public static String User_code = """
 			
 		import java.util.Scanner;
 
