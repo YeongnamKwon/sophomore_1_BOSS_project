@@ -24,17 +24,27 @@
                 display: flex;
                 flex-direction: column;
                 gap: 14px;
-                width: 280px;
+                width: 300px;
+            }
+            .header-group {
+                text-align: center;
+                margin-bottom: 10px;
             }
 
-            h2 {
-                text-align: center;
-                margin-bottom: 8px;
-                font-size: 20px;
+            .header-group h2 {
+                margin: 0;
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .header-group p {
+                margin: 8px 0 0;
+                font-size: 13px;
+                color: #888;
             }
 
             input {
-                padding: 10px 12px;
+                padding: 12px;
                 background: #111;
                 border: 1px solid #444;
                 border-radius: 6px;
@@ -45,18 +55,20 @@
             }
 
             input:focus {
-                border-color: #888;
+                border-color: #fff;
             }
 
             button {
-                padding: 10px;
+                padding: 12px;
                 background: #fff;
                 color: #000;
                 border: none;
                 border-radius: 6px;
-                font-size: 14px;
+                font-size: 15px;
                 font-weight: bold;
                 cursor: pointer;
+                width: 100%;
+                transition: background 0.2s;
             }
 
             button:hover {
@@ -74,6 +86,12 @@
 
     <body>
         <div class="box">
+            <!-- 3.요청하신 상단 문구 추가 -->
+             <div class="header-group">
+                <h2>로그인</h2>
+                <p>학번과 비밀번호를 입력하세요.</p>
+             </div>
+
             <input type="text" id="id" placeholder="학번" />
             <input type="password" id="pw" placeholder="비밀번호" />
             <div class="error" id="error">학번 또는 비밀번호가 맞지 않습니다.</div>
