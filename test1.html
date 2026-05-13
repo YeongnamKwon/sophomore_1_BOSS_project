@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>문제 선택</title>
+</head>
+<body>
+  <h1>문제 선택 페이지</h1>
+  <button onclick="goSubmit()">문제 1 선택</button>
+
+  <script>
+    function goSubmit() {
+      localStorage.setItem('selectedProblem', '문제 1');
+      window.location.href = 'test2.html';
+    }
+  </script>
+</body>
+</html>

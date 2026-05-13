@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Code Judge Program Login</title>
+        <style>
+
+            * {
+                box-sizing: border-box;
+                font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            }
+
+            body {
+                margin: 0;
+                background: radial-gradient(circle at center, #333333, #000000);
+                height: 100vh;
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .bg-circle {
+                position: absolute;
+                width: 400px;
+                height: 400px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 50%;
+                filter: blur(100px);
+                z-index: 1;
+            }
+
+            .login-card {
+                position: relative;
+                z-index: 10;
+                width: 360px;
+                padding: 60px 40px;
+                background: rgba(255, 255, 255, 0.03);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 24px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+                text-align: center;
+            }
+
+            .login-card h2 {
+                color: #eeeeee;
+                font-size: 26px;
+                font-weight: 300;
+                margin-bottom: 8px;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+            }
+
+            .login-card p{
+                color: rgba(255, 255, 255, 0.4);
+                font-size: 13px;
+                margin-bottom: 45px;
+            }
+
+            .input-group {
+                position: relative;
+                margin-bottom: 35px;
+            }
+
+            .input-group input {
+                width: 100%;
+                padding: 12px 0;
+                background: transparent;
+                border: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                outline: none;
+                color: #ffffff;
+                font-size: 16px;
+                transition: all 0.3s ease;
+            }
+
+            .input-group input:focus {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+            }
+
+            .input-group input::placeholder {
+                color: rgba(255, 255, 255, 0.2);
+            }
+
+            button {
+                width: 100%;
+                padding: 15px;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.1);
+                color:#ffffff;
+                font-size: 14px;
+                font-weight: 500;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+            button:hover {
+                background: #ffffff;
+                color:#000000;
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            }
+
+            .error-msg {
+                color:#ff5555;
+                font-size: 12px;
+                margin-top: -25px;
+                margin-bottom: 25px;
+                display: none;
+            }
+
+            
+        </style>
+    </head>
+
+    <body>
+        <div class="bg-circle"></div>
+             <div class="login-card">
+                <h2>Code Judge Program</h2>
+                <p>학번을 입력하세요.</p>
+                <div class="input-group">
+                    <input type="text" id="studentID" placeholder="학번을 입력하세요" autocomplete="off">
+                </div>
+                <div class="error-msg" id="error">학번을 입력해 주세요.</div>
+                <button onclick="handlelogin()">ENTER</button>
+
+        <script>
+            function handlelogin() {
+                const idInput = document.getElementById('studentID');
+                const id = idInput.value.trim();
+                const error = document.getElementById('error');
+
+                if (!id) {
+                    error.style.display = 'block';
+                    return;
+                }
+
+                error.style.display = 'none';
+
+                sessionStorage.setItem('currentStudentId', id);
+
+            const userKey = `student_${id}`;
+            const existingData = localStorage.getItem(userKey);
+
+            if (!existingData) {
+                const initialData = {
+                    studentId: id,
+                    selectedProblem: "",
+                    submittedCode: "",
+                    result: ""
+                };
+                localStorage.setItem(userKey, JSON.stringify(initialData));
+            }
+
+                window.location.href = 'test1.html';
+            }
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Enter') handlelogin();
+            });
+        </script>
+    </body>
+</html>
