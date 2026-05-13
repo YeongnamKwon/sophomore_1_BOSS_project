@@ -5,9 +5,11 @@ import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class runner {
-
+    static Logger log = Logger.getLogger("Judge");
+    
     public errormanager run(String input) {
         errormanager runResult = new errormanager();
         try {
@@ -62,9 +64,7 @@ public class runner {
             return runResult;
 
         } catch (Exception e) {
-
-            e.printStackTrace();
-
+            log.severe("Error : "+ e + "\nLocation : " + e.getStackTrace()[0]);
             return runResult;
         }
     }

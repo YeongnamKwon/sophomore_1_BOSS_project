@@ -12,11 +12,8 @@ public class judgemodel {
     public static void main(String[] args) {
 
         try {
-
         	Users_answercode user = new Users_answercode();
-
             Files.write( Paths.get("Users_answercode.java"), user.User_code.getBytes());
-            
             compiler com = new compiler();
             boolean success = com.compile();
 
@@ -60,8 +57,7 @@ public class judgemodel {
             }
         } 
         catch (Exception e) {
-        	log.severe(e.getMessage());
-        	e.printStackTrace();
+            log.severe(String.format("Error : %s%nLocation : %s",e,e.getStackTrace()[0]));
         }
     }
 }
