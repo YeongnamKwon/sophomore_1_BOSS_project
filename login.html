@@ -139,7 +139,7 @@
 
                 error.style.display = 'none';
 
-                localStorage.setItem('currentStudentId', id);
+                sessionStorage.setItem('currentStudentId', id);
 
             const userKey = `student_${id}`;
             const existingData = localStorage.getItem(userKey);

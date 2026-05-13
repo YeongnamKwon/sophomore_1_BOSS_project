@@ -9,7 +9,7 @@
   <p id="info"></p>
 
   <script>
-    const studentId = localStorage.getItem('currentStudentId');
+    const studentId = sessionStorage.getItem('currentStudentId');
     const problem = localStorage.getItem('selectedProblem');
 
     document.getElementById('info').textContent =
