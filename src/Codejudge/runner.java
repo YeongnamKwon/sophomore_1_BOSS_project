@@ -4,17 +4,21 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class runner {
+    static Logger log = Logger.getLogger("Judge");
 
-    public String run(String input) {
-
+    public errormanager run(String input) {
+        errormanager runResult = new errormanager();
         try {
+            long start = System.nanoTime();
         	ProcessBuilder pb =new ProcessBuilder("java","Users_answercode.java");
 
             Process process = pb.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            BufferedWriter writer =new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
             BufferedReader errorReader = new BufferedReader( new InputStreamReader(process.getErrorStream()));
             
             writer.write(input);
@@ -22,6 +26,14 @@ public class runner {
 
             writer.flush();
             writer.close();
+
+            boolean finished = process.waitFor(2,TimeUnit.SECONDS);
+
+            if(!finished) {
+                process.destroy();
+                runResult.timeout = true;
+                return runResult;
+            }
             
             StringBuilder output = new StringBuilder();
             StringBuilder error = new StringBuilder();
@@ -37,18 +49,26 @@ public class runner {
             }
 
             process.waitFor();
+            long end = System.nanoTime();
+            runResult.runningTime = (end - start);
+            
+            Runtime runtime = Runtime.getRuntime();
+            runResult.memory = runtime.totalMemory() - runtime.freeMemory();
             
             if(error.length() > 0) {
-            	return "Runtime Error : " + error;
+            	runResult.runtimeError = true;
+                runResult.errorMessage = error.toString();
+                return runResult ;
             }
             
-            return output.toString();
+            runResult.output = output.toString();
+            
+
+            return runResult;
 
         } catch (Exception e) {
-
-            e.printStackTrace();
-
-            return "";
+            log.severe(String.format("Error : %s%nLocation : %s",e,e.getStackTrace()[0]));
+            return runResult;
         }
     }
 }
