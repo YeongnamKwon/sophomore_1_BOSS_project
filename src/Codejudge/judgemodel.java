@@ -1,10 +1,9 @@
 package Codejudge;
 
+import User_answer.Users_answercode;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import User_answer.Users_answercode;
 import java.util.List;
-
 import java.util.logging.Logger;
 
 public class judgemodel {
@@ -32,21 +31,27 @@ public class judgemodel {
                 int count = 0;
 
                 for(testcase tc : tests) {
-                	String output = run.run(tc.input);
-                	boolean result = j.check(output, tc.answer);
-                	if(result) {
+                	errormanager runResult = run.run(tc.input);
+                    if(runResult.runtimeError) {
+                        System.out.println("Run Time Error.");
+                        break;
+                    }
+
+                	boolean judgeResult = j.check(runResult.output, tc.answer);
+                	if(judgeResult) {
                     	System.out.println("Testcase " + ++count + ": 정답");
                     } 
                 	else {
                     	System.out.println("오답 ");
                     	System.out.println("시스템 정답 : " + tc.answer);
-                    	System.out.println("실행 결과 : " + output);
+                    	System.out.println("실행 결과 : " + runResult.output);
                     	break;
                     }
                 }
                 if(count == tests.size()) {
                 	System.out.println("정답입니다!");
                 }
+                
             }
             else {
             	System.out.println("컴파일 실패");
