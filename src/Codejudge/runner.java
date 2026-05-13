@@ -11,6 +11,7 @@ public class runner {
     public errormanager run(String input) {
         errormanager runResult = new errormanager();
         try {
+            long start = System.nanoTime();
         	ProcessBuilder pb =new ProcessBuilder("java","Users_answercode.java");
 
             Process process = pb.start();
@@ -24,7 +25,7 @@ public class runner {
             writer.flush();
             writer.close();
 
-             boolean finished = process.waitFor(2,TimeUnit.SECONDS);
+            boolean finished = process.waitFor(2,TimeUnit.SECONDS);
 
             if(!finished) {
                 process.destroy();
@@ -46,6 +47,8 @@ public class runner {
             }
 
             process.waitFor();
+            long end = System.nanoTime();
+            runResult.runningTime = (end - start);
             
             if(error.length() > 0) {
             	runResult.runtimeError = true;
@@ -54,6 +57,8 @@ public class runner {
             }
             
             runResult.output = output.toString();
+            
+
             return runResult;
 
         } catch (Exception e) {

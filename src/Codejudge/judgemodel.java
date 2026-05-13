@@ -40,9 +40,10 @@ public class judgemodel {
                 	boolean judgeResult = j.check(runResult.output, tc.answer);
                 	if(judgeResult) {
                     	System.out.println("Testcase " + ++count + ": 정답");
+                        System.out.printf("실행 시간 : %.6f s\n\n", runResult.runningTime / 1000000000.0);
                     } 
                 	else {
-                    	System.out.println("오답 ");
+                    	System.out.println("오답입니다.");
                     	System.out.println("시스템 정답 : " + tc.answer);
                     	System.out.println("실행 결과 : " + runResult.output);
                     	break;

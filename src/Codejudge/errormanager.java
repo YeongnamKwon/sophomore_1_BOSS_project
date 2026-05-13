@@ -2,7 +2,7 @@ package Codejudge;
 
 public class errormanager {
 
-    public boolean success;
+    public long runningTime;
 
     public boolean runtimeError;
 
