@@ -120,12 +120,13 @@
              <div class="login-card">
                 <h2>Code Judge Program</h2>
                 <p>학번을 입력하세요.</p>
-                <div class="input-group">
-                    <input type="text" id="studentID" placeholder="학번을 입력하세요" autocomplete="off">
-                </div>
-                <div class="error-msg" id="error">학번을 입력해 주세요.</div>
-                <button onclick="handlelogin()">ENTER</button>
+                <form action="/login" method="post">
+                    <div class="input-group">
+                        <input type="text" name="userId" placeholder="학번을 입력하세요" autocomplete="off" required>
+                    </div>
 
+                    <button type="submit">ENTER</button>
+                </form>
         <script>
             function handlelogin() {
                 const idInput = document.getElementById('studentID');
@@ -154,7 +155,7 @@
                 localStorage.setItem(userKey, JSON.stringify(initialData));
             }
 
-                window.location.href = 'test1.html';
+                window.location.href = '/submit';
             }
 
             document.addEventListener('keydown', e => {

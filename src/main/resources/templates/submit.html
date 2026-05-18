@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>코드 제출</title>
@@ -8,6 +8,14 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
+        }
+
+        .user-info {
+            width: 900px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            background-color: #f7f7f7;
         }
 
         textarea {
@@ -40,7 +48,12 @@
 
 <h2>코드 제출</h2>
 
-<textarea id="code"></textarea>
+<div class="user-info">
+    사용자 식별 번호:
+    <strong th:text="${userId}">userId</strong>
+</div>
+
+<textarea id="code" placeholder="여기에 Java 코드를 입력하세요."></textarea>
 <br>
 <button onclick="submitCode()">제출</button>
 
@@ -53,6 +66,11 @@ let eventSource = null;
 function submitCode() {
     const code = document.getElementById("code").value;
     const resultBox = document.getElementById("resultBox");
+
+    if (code.trim() === "") {
+        alert("코드를 입력하세요.");
+        return;
+    }
 
     if (eventSource !== null) {
         eventSource.close();
@@ -75,7 +93,6 @@ function submitCode() {
         }
 
         resultBox.textContent += message + "\n";
-
         resultBox.scrollTop = resultBox.scrollHeight;
     };
 
