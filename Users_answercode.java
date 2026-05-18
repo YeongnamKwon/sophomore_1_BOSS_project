@@ -1,14 +1,14 @@
+import java.util.Scanner;
 
-	import java.util.Scanner;
+public class Users_answercode {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-       public class Users_answercode {
+        int a = sc.nextInt();
+        int b = sc.nextInt();
 
-		public static void main(String[] args) {
-			Scanner scanner = new Scanner(System.in);
+        System.out.println(a + b);
 
-               int a = scanner.nextInt();
-               int b = scanner.nextInt();
-
-               System.out.println(a + b);
-           }
-       }
+        sc.close();
+    }
+}

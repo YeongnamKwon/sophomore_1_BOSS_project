@@ -1,0 +1,13 @@
+.gradle/
+.vscode/
+.settings/
+bin/
+build/
+
+*.class
+
+Users_answercode.java
+Users_answercode.class
+
+.DS_Store
+Thumbs.db
