@@ -1,11 +1,12 @@
 package com.example.codejudge.judge;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Logger;
 
 public class compiler {
-    static Logger log = Logger.getLogger("Judge");
+    static final Logger log = Logger.getLogger("Judge");
 
     public String errorMessage = "";
 
@@ -31,7 +32,7 @@ public class compiler {
 
             return result == 0;
 
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             errorMessage = e.getMessage();
             log.severe(String.format("Error : %s%nLocation : %s", e, e.getStackTrace()[0]));
             return false;
