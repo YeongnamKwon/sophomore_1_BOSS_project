@@ -5,18 +5,32 @@ public class Users_answercode {
         Scanner sc = new Scanner(System.in);
 
         int n = sc.nextInt();
-        int max = sc.nextInt();
+        int count = 0;
 
-        for (int i = 1; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             int num = sc.nextInt();
 
-            if (num > max) {
-                max = num;
+            if (isPrime(num)) {
+                count++;
             }
         }
 
-        System.out.println(max);
+        System.out.println(count);
 
         sc.close();
+    }
+
+    public static boolean isPrime(int num) {
+        if (num < 2) {
+            return false;
+        }
+
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
