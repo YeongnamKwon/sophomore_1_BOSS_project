@@ -14,34 +14,61 @@ public class runner {
     public errormanager run(String input) {
         errormanager runResult = new errormanager();
 
+        final long[] maxMemory = {0};
+        final boolean[] monitoring = {true};
+
         try {
             long start = System.nanoTime();
 
             ProcessBuilder pb = new ProcessBuilder("java", "Users_answercode");
             Process process = pb.start();
 
+            long pid = process.pid();
+
+            Thread memoryMonitor = new Thread(() -> {
+                while (monitoring[0]) {
+                    long memory = getProcessMemoryWindows(pid);
+
+                    if (memory > maxMemory[0]) {
+                        maxMemory[0] = memory;
+                    }
+
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+                }
+            });
+
+            memoryMonitor.start();
+
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream())
             );
 
+            BufferedReader errorReader = new BufferedReader(
+                    new InputStreamReader(process.getErrorStream())
+            );
+
             try (BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(process.getOutputStream())
+                    new OutputStreamWriter(process.getOutputStream())
             )) {
                 writer.write(input);
                 writer.newLine();
                 writer.flush();
             }
 
-            BufferedReader errorReader = new BufferedReader(
-                    new InputStreamReader(process.getErrorStream())
-            );
-
             boolean finished = process.waitFor(2, TimeUnit.SECONDS);
+
+            monitoring[0] = false;
+            memoryMonitor.interrupt();
 
             if (!finished) {
                 process.destroyForcibly();
                 runResult.timeout = true;
                 runResult.output = "";
+                runResult.memory = maxMemory[0];
                 return runResult;
             }
 
@@ -61,9 +88,7 @@ public class runner {
             long end = System.nanoTime();
 
             runResult.runningTime = end - start;
-
-            Runtime runtime = Runtime.getRuntime();
-            runResult.memory = runtime.totalMemory() - runtime.freeMemory();
+            runResult.memory = maxMemory[0];
 
             if (error.length() > 0) {
                 runResult.runtimeError = true;
@@ -77,13 +102,44 @@ public class runner {
             return runResult;
 
         } catch (IOException | InterruptedException e) {
+            monitoring[0] = false;
+
             log.severe(String.format("Error : %s%nLocation : %s", e, e.getStackTrace()[0]));
 
             runResult.runtimeError = true;
             runResult.errorMessage = e.getMessage();
             runResult.output = "";
+            runResult.memory = maxMemory[0];
 
             return runResult;
+        }
+    }
+
+    private long getProcessMemoryWindows(long pid) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder(
+                    "powershell",
+                    "-Command",
+                    "(Get-Process -Id " + pid + ").WorkingSet64"
+            );
+
+            Process process = pb.start();
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream())
+            );
+
+            String line = reader.readLine();
+            process.waitFor();
+
+            if (line == null || line.isBlank()) {
+                return 0;
+            }
+
+            return Long.parseLong(line.trim());
+
+        } catch (IOException | InterruptedException | NumberFormatException e) {
+            return 0;
         }
     }
 }

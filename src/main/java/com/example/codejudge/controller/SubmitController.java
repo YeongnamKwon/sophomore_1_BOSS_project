@@ -52,7 +52,6 @@ public class SubmitController {
         new Thread(() -> {
             try {
                 judgemodel judgeModel = new judgemodel();
-                emitter.send("[학번 " + userId + "] ");
                 judgeModel.judgeCodeLive(code, problemType, message -> {
                     try {
                         emitter.send(message);
@@ -63,7 +62,7 @@ public class SubmitController {
 
                 emitter.complete();
 
-            } catch (IOException | RuntimeException e) {
+            } catch (RuntimeException e) {
                 try {
                     emitter.send("채점 중 오류 발생: " + e.getMessage());
                 } 

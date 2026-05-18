@@ -48,12 +48,22 @@ public class judgemodel {
             
             runner run = new runner();
             judge j = new judge();
+            boolean allCorrect = true;
+            long totalRunningTime = 0;
+            long maxMemory = 0; 
 
             int count = 0;
+            send.accept("[PROGRESS]0");
 
             for (testcase tc : tests) {
                 count++;
                 errormanager runResult = run.run(tc.input);
+
+                totalRunningTime += runResult.runningTime;
+                maxMemory = Math.max(maxMemory, runResult.memory);
+
+                int progress = (int) (((double) count / tests.size()) * 100);
+                send.accept("[PROGRESS]" + progress);  
 
                 if (runResult.timeout) {
                     send.accept("Testcase " + count + ": 시간 초과");
@@ -71,13 +81,8 @@ public class judgemodel {
                 }
 
                 boolean judgeResult = j.check(runResult.output, tc.answer);
-
-                if (judgeResult) {
-                    send.accept("Testcase " + count + ": 정답");
-                    send.accept("메모리 사용량: " + String.format("%.2f MB", runResult.memory / 1024.0 / 1024.0));
-                    send.accept("실행 시간: " + String.format("%.6f s", runResult.runningTime / 1000000000.0));
-                    send.accept("=============================");
-                } else {
+                
+                if (!judgeResult) {
                     send.accept("Testcase " + count + ": 오답");
                     send.accept("입력값: " + tc.input);
                     send.accept("시스템 정답: " + tc.answer);
@@ -87,9 +92,14 @@ public class judgemodel {
                 }
             }
 
-            if (count == tests.size()) {
+            if (allCorrect && count == tests.size()) {
+                send.accept("[PROGRESS]100");
                 send.accept("정답입니다!");
             }
+
+            send.accept("메모리 사용량: " + String.format("%.2f MB", maxMemory / 1024.0 / 1024.0));
+            send.accept("실행 시간: " + String.format("%.6f s", totalRunningTime / 1000000000.0));
+            send.accept("=============================");
 
         } catch (RuntimeException e) {
             log.severe(String.format("Error : %s%nLocation : %s", e, e.getStackTrace()[0]));

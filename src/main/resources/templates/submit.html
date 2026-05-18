@@ -42,6 +42,31 @@
             font-family: Consolas, monospace;
             white-space: pre-wrap;
         }
+    .progress-area {
+        width: 900px;
+        margin-bottom: 20px;
+    }
+
+    .progress-number {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .progress-wrap {
+        width: 900px;
+        height: 26px;
+        border: 1px solid #333;
+        background-color: #eee;
+        overflow: hidden;
+    }
+
+    #progressBar {
+        width: 0%;
+        height: 100%;
+        background-color: #4caf50;
+        transition: width 0.4s ease;
+    }
     </style>
 </head>
 <body>
@@ -64,11 +89,49 @@
 <br>
 <button onclick="submitCode()">제출</button>
 
+<h2>채점 진행률</h2>
+
+<div class="progress-area">
+    <div class="progress-number">
+        <span id="progressText">0</span>%
+    </div>
+
+    <div class="progress-wrap">
+        <div id="progressBar"></div>
+    </div>
+</div>
+
 <h2>채점 결과</h2>
 <pre id="resultBox"></pre>
 
 <script>
 let eventSource = null;
+let currentProgress = 0;
+let progressAnimation = null;
+
+function animateProgress(targetProgress) {
+    targetProgress = Number(targetProgress);
+
+    if (progressAnimation !== null) {
+        clearInterval(progressAnimation);
+    }
+
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+
+    progressAnimation = setInterval(() => {
+        if (currentProgress >= targetProgress) {
+            clearInterval(progressAnimation);
+            progressAnimation = null;
+            return;
+        }
+
+        currentProgress++;
+
+        progressText.textContent = currentProgress;
+        progressBar.style.width = currentProgress + "%";
+    }, 20);
+}
 
 function submitCode() {
     const code = document.getElementById("code").value;
@@ -84,6 +147,15 @@ function submitCode() {
     }
 
     resultBox.textContent = "채점 요청 중...\n";
+    currentProgress = 0;
+
+    if (progressAnimation !== null) {
+        clearInterval(progressAnimation);
+        progressAnimation = null;
+    }
+
+    document.getElementById("progressText").textContent = "0";
+    document.getElementById("progressBar").style.width = "0%";
 
     const encodedCode = encodeURIComponent(code);
     const problemType = document.getElementById("problemType").value;
@@ -91,15 +163,14 @@ function submitCode() {
         "/submit-stream?code=" + encodedCode + "&problemType=" + encodeURIComponent(problemType)
     );
     eventSource.onmessage = function(event) {
+        console.log("서버 메시지:", event.data);
         let message = event.data;
 
-        if (message.startsWith("[CURRENT]")) {
-            message = message.replace("[CURRENT]", "");
-        }
-
-        if (message.startsWith("[CLEAR_CURRENT]")) {
-            return;
-        }
+    if (message.startsWith("[PROGRESS]")) {
+        const percent = message.replace("[PROGRESS]", "");
+        animateProgress(percent);
+        return;
+    }
 
         resultBox.textContent += message + "\n";
         resultBox.scrollTop = resultBox.scrollHeight;
