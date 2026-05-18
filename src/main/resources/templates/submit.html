@@ -48,6 +48,12 @@
 
 <h2>코드 제출</h2>
 
+<label>문제 선택</label>
+<select id="problemType">
+    <option value="A_PLUS_B">A+B</option>
+    <option value="MAX_VALUE">최댓값</option>
+</select>
+
 <div class="user-info">
     사용자 식별 번호:
     <strong th:text="${userId}">userId</strong>
@@ -79,8 +85,10 @@ function submitCode() {
     resultBox.textContent = "채점 요청 중...\n";
 
     const encodedCode = encodeURIComponent(code);
-    eventSource = new EventSource("/submit-stream?code=" + encodedCode);
-
+    const problemType = document.getElementById("problemType").value;
+    eventSource = new EventSource(
+        "/submit-stream?code=" + encodedCode + "&problemType=" + encodeURIComponent(problemType)
+    );
     eventSource.onmessage = function(event) {
         let message = event.data;
 

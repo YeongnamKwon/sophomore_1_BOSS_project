@@ -11,8 +11,7 @@ import java.util.logging.Logger;
 public class judgemodel {
     static final Logger log = Logger.getLogger("Judge");
 
-    public void judgeCodeLive(String userCode, Consumer<String> send) {
-        try {
+    public void judgeCodeLive(String userCode, String problemType, Consumer<String> send){    try {
             send.accept("사용자 코드 저장 중...");
 
             try {
@@ -45,8 +44,8 @@ public class judgemodel {
             send.accept("=============================");
 
             testcasemanager manager = new testcasemanager();
-            List<testcase> tests = manager.getTests();
-
+            List<testcase> tests = manager.getTests(problemType);
+            
             runner run = new runner();
             judge j = new judge();
 

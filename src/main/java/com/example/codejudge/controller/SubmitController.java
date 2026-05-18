@@ -33,7 +33,7 @@ public class SubmitController {
     }
 
     @GetMapping("/submit-stream")
-    public SseEmitter submitStream(String code, HttpSession session) {
+    public SseEmitter submitStream(String code, String problemType, HttpSession session) {
         SseEmitter emitter = new SseEmitter(0L);
 
         String userId = (String) session.getAttribute("userId");
@@ -53,7 +53,7 @@ public class SubmitController {
             try {
                 judgemodel judgeModel = new judgemodel();
                 emitter.send("[학번 " + userId + "] ");
-                judgeModel.judgeCodeLive(code, message -> {
+                judgeModel.judgeCodeLive(code, problemType, message -> {
                     try {
                         emitter.send(message);
                     } catch (IOException | RuntimeException e) {

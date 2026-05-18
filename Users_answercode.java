@@ -4,10 +4,18 @@ public class Users_answercode {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        int a = sc.nextInt();
-        int b = sc.nextInt();
+        int n = sc.nextInt();
+        int max = sc.nextInt();
 
-        System.out.println(a * b);
+        for (int i = 1; i < n; i++) {
+            int num = sc.nextInt();
+
+            if (num > max) {
+                max = num;
+            }
+        }
+
+        System.out.println(max);
 
         sc.close();
     }
