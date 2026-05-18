@@ -1,5 +1,6 @@
 package com.example.codejudge.judge;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,16 +9,22 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class judgemodel {
-    static Logger log = Logger.getLogger("Judge");
+    static final Logger log = Logger.getLogger("Judge");
 
     public void judgeCodeLive(String userCode, Consumer<String> send) {
         try {
             send.accept("사용자 코드 저장 중...");
 
-            Files.write(
+            try {
+                Files.write(
                     Paths.get("Users_answercode.java"),
                     userCode.getBytes(StandardCharsets.UTF_8)
-            );
+                );
+            } 
+            catch (IOException e) {
+                send.accept("사용자 코드 저장 실패: " + e.getMessage());
+                return;
+            }
 
             send.accept("컴파일 중...");
 
@@ -85,7 +92,7 @@ public class judgemodel {
                 send.accept("정답입니다!");
             }
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.severe(String.format("Error : %s%nLocation : %s", e, e.getStackTrace()[0]));
             send.accept("채점 중 오류 발생: " + e.getMessage());
         }

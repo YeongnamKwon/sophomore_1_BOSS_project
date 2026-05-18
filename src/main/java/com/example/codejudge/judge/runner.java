@@ -2,13 +2,14 @@ package com.example.codejudge.judge;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class runner {
-    static Logger log = Logger.getLogger("Judge");
+    static final Logger log = Logger.getLogger("Judge");
 
     public errormanager run(String input) {
         errormanager runResult = new errormanager();
@@ -23,18 +24,17 @@ public class runner {
                     new InputStreamReader(process.getInputStream())
             );
 
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(process.getOutputStream())
-            );
+            try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(process.getOutputStream())
+            )) {
+                writer.write(input);
+                writer.newLine();
+                writer.flush();
+            }
 
             BufferedReader errorReader = new BufferedReader(
                     new InputStreamReader(process.getErrorStream())
             );
-
-            writer.write(input);
-            writer.newLine();
-            writer.flush();
-            writer.close();
 
             boolean finished = process.waitFor(2, TimeUnit.SECONDS);
 
@@ -76,7 +76,7 @@ public class runner {
 
             return runResult;
 
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             log.severe(String.format("Error : %s%nLocation : %s", e, e.getStackTrace()[0]));
 
             runResult.runtimeError = true;

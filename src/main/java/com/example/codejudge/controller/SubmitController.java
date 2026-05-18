@@ -1,5 +1,7 @@
 package com.example.codejudge.controller;
 
+import java.io.IOException;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +42,7 @@ public class SubmitController {
             try {
                 emitter.send("로그인 정보가 없습니다. 다시 로그인해주세요.");
                 emitter.complete();
-            } catch (Exception e) {
+            } catch (IOException | RuntimeException e) {
                 emitter.completeWithError(e);
             }
 
@@ -54,17 +56,18 @@ public class SubmitController {
                 judgeModel.judgeCodeLive(code, message -> {
                     try {
                         emitter.send(message);
-                    } catch (Exception e) {
+                    } catch (IOException | RuntimeException e) {
                         throw new RuntimeException(e);
                     }
                 });
 
                 emitter.complete();
 
-            } catch (Exception e) {
+            } catch (IOException | RuntimeException e) {
                 try {
                     emitter.send("채점 중 오류 발생: " + e.getMessage());
-                } catch (Exception ignored) {
+                } 
+                catch (IOException | RuntimeException ignored) {
                 }
 
                 emitter.completeWithError(e);
