@@ -1,5 +1,6 @@
 package com.example.codejudge.judge;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,18 +9,22 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class judgemodel {
-    static Logger log = Logger.getLogger("Judge");
+    static final Logger log = Logger.getLogger("Judge");
 
-    public void judgeCodeLive(String userCode, Consumer<String> send) {
+    public void judgeCodeLive(String userCode, String problemType, Consumer<String> send){ 
         try {
-            send.accept("사용자 코드 저장 중...");
-
-            Files.write(
-                    Paths.get("Users_answercode.java"),
+            try {
+                Files.deleteIfExists(Paths.get("Main.java"));
+                Files.deleteIfExists(Paths.get("Main.class"));
+                Files.write(
+                    Paths.get("Main.java"),
                     userCode.getBytes(StandardCharsets.UTF_8)
-            );
-
-            send.accept("컴파일 중...");
+                );
+            } 
+            catch (IOException e) {
+                send.accept("사용자 코드 저장 실패: " + e.getMessage());
+                return;
+            }
 
             compiler com = new compiler();
             boolean success = com.compile();
@@ -34,58 +39,78 @@ public class judgemodel {
                 return;
             }
 
-            send.accept("컴파일 성공");
-            send.accept("=============================");
-
             testcasemanager manager = new testcasemanager();
-            List<testcase> tests = manager.getTests();
+            List<testcase> tests = manager.getTests(problemType);
+
+            send.accept("문제 타입: " + problemType);
+
+            if (tests == null || tests.isEmpty()) {
+                send.accept("테스트케이스가 없습니다.");
+                send.accept("[STATUS]채점 실패");
+                return;
+            }
 
             runner run = new runner();
             judge j = new judge();
 
-            int count = 0;
+            long totalRunningTime = 0;
+            long maxMemory = 0;
 
-            for (testcase tc : tests) {
-                count++;
+            send.accept("[PROGRESS]0");
+
+            for (int i = 0; i < tests.size(); i++) {
+                testcase tc = tests.get(i);
+                int count = i + 1;
+
+
                 errormanager runResult = run.run(tc.input);
 
+                totalRunningTime += runResult.runningTime;
+                maxMemory = Math.max(maxMemory, runResult.memory);
+
                 if (runResult.timeout) {
+                    send.accept("\n");
                     send.accept("Testcase " + count + ": 시간 초과");
-                    break;
+                    send.accept("[STATUS]시간 초과");
+                    return;
                 }
 
                 if (runResult.runtimeError) {
+                    send.accept("\n");
                     send.accept("Testcase " + count + ": 런타임 에러");
 
                     if (runResult.errorMessage != null) {
                         send.accept(runResult.errorMessage);
                     }
 
-                    break;
+                    send.accept("[STATUS]런타임 에러");
+                    return;
                 }
 
                 boolean judgeResult = j.check(runResult.output, tc.answer);
 
-                if (judgeResult) {
-                    send.accept("Testcase " + count + ": 정답");
-                    send.accept("메모리 사용량: " + String.format("%.2f MB", runResult.memory / 1024.0 / 1024.0));
-                    send.accept("실행 시간: " + String.format("%.6f s", runResult.runningTime / 1000000000.0));
-                    send.accept("=============================");
-                } else {
-                    send.accept("Testcase " + count + ": 오답");
+                if (!judgeResult) {
+                    send.accept("\n");
+                    send.accept("오답입니다.");
                     send.accept("입력값: " + tc.input);
-                    send.accept("시스템 정답: " + tc.answer);
-                    send.accept("실행 결과: " + runResult.output);
-                    send.accept("=============================");
-                    break;
+                    send.accept("기댓값: " + tc.answer);
+                    send.accept("출력값: " + runResult.output);
+                    send.accept("[STATUS]틀렸습니다.");
+                    return;
                 }
+
+                int progress = (int) (((double) count / tests.size()) * 100);
+                send.accept("[PROGRESS]" + progress);
             }
 
-            if (count == tests.size()) {
-                send.accept("정답입니다!");
-            }
+            send.accept("\n");
+            send.accept("[PROGRESS]100");
+            send.accept("[TIME]" + String.format("%.6f s", totalRunningTime / 1000000000.0));
+            send.accept("[MEMORY]" + String.format("%.2f MB", maxMemory / 1024.0 / 1024.0));
+            send.accept("[LANGUAGE]Java");
+            send.accept("[STATUS]정답입니다!!");
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.severe(String.format("Error : %s%nLocation : %s", e, e.getStackTrace()[0]));
             send.accept("채점 중 오류 발생: " + e.getMessage());
         }
