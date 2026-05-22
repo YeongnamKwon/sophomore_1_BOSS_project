@@ -2,189 +2,470 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>코드 제출</title>
-
+    <title>Code Judge - Practice</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --boj-blue: #007bff;
+            --text-main: #eeeeee;
+            --text-sub: rgba(255, 255, 255, 0.5);
+            --editor-bg: #1e1e1e;
+            --result-bg: rgba(0, 0, 0, 0.6);
         }
+
+        * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
+
+        body {
+            margin: 0; padding: 20px;
+            background: radial-gradient(circle at center, #333333, #000000);
+            min-height: 100vh; color: var(--text-main);
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1500px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 20px; height: calc(100vh - 40px);
+        }
+
+        .problem-section {
+            background: var(--glass-bg); backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            padding: 30px; overflow-y: auto;
+        }
+
+        .editor-section {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .editor-container {
+            background: var(--glass-bg); backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            padding: 25px; flex: 2; display: flex; flex-direction: column;
+            min-height: 0;
+        }
+
+        .result-container {
+            background: var(--result-bg); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 20px; flex: 1;
+            display: flex; flex-direction: column;
+            min-height: 0;
+        }
+
+        h1.title { font-size: 24px; margin: 0 0 20px 0; }
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13px; text-align: center; }
+        .info-table th { color: var(--text-sub); border-bottom: 1px solid var(--glass-border); padding: 10px; }
+        .info-table td { padding: 10px; border-bottom: 1px solid var(--glass-border); }
+
+        h3 { font-size: 18px; border-bottom: 2px solid var(--boj-blue); display: inline-block; margin: 25px 0 15px 0; }
+        p { line-height: 1.6; color: rgba(255, 255, 255, 0.8); font-size: 14px; margin: 0 0 10px 0; }
+
+        .example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .example-box pre { background: rgba(0, 0, 0, 0.4); padding: 12px; border-radius: 8px; font-size: 13px; color: #00ffcc; border: 1px solid var(--glass-border); margin: 5px 0; white-space: pre-wrap; }
+
+        .selector-bar { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; }
+        select { background: #333; color: #fff; border: 1px solid #555; padding: 8px 12px; border-radius: 6px; cursor: pointer; outline: none; }
+
+        textarea#code-editor {
+            flex-grow: 1; background: var(--editor-bg); color: #d4d4d4;
+            border: 1px solid #333; border-radius: 8px; padding: 20px;
+            font-family: 'Fira Code', monospace; font-size: 14px;
+            resize: none; outline: none; line-height: 1.5;
+            min-height: 260px;
+        }
+
+        .button-group { margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end; }
+        .btn { padding: 10px 25px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-reset { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .btn-submit { background: var(--boj-blue); color: #fff; }
 
         .user-info {
-            width: 900px;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            background-color: #f7f7f7;
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 12px;
         }
 
-        textarea {
-            width: 900px;
-            height: 400px;
-            font-family: Consolas, monospace;
-            font-size: 14px;
+        .user-info strong {
+            color: var(--text-main);
         }
 
-        button {
-            margin-top: 10px;
-            padding: 8px 16px;
-            cursor: pointer;
+        .progress-area {
+            margin-bottom: 14px;
         }
 
-    #resultBox {
-        width: 900px;
-        min-height: 160px;
-        max-height: 300px;
-        overflow-y: auto;
-        border: 1px solid #333;
-        background-color: #111;
-        color: #eee;
-        padding: 10px;
-        font-family: Consolas, monospace;
-        white-space: pre-wrap;
-    }
-    .progress-area {
-        width: 900px;
-        margin-bottom: 20px;
-    }
+        .progress-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-sub);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
 
-    .progress-number {
-        font-size: 28px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
+        .progress-number {
+            color: #ffcc00;
+            font-weight: 700;
+        }
 
-    .progress-wrap {
-        width: 900px;
-        height: 26px;
-        border: 1px solid #333;
-        background-color: #eee;
-        overflow: hidden;
-    }
+        .progress-wrap {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
 
-    #progressBar {
-        width: 0%;
-        height: 100%;
-        background-color: #4caf50;
-        transition: width 0.4s ease;
-    }
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background: var(--boj-blue);
+            transition: width 0.15s linear;
+        }
+
+        .result-header { font-size: 14px; font-weight: 600; color: var(--text-sub); margin-bottom: 10px; display: flex; justify-content: space-between; }
+        #result-display {
+            flex-grow: 1; font-family: 'Fira Code', monospace; font-size: 13px;
+            color: #bbb; overflow-y: auto; white-space: pre-wrap;
+            margin: 0;
+        }
+        .status-running { color: #ffcc00; }
+        .status-success { color: #28a745; font-weight: bold; }
+        .status-error { color: #ff6b6b; font-weight: bold; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
     </style>
 </head>
+
 <body>
+    <div class="container">
+        <div class="problem-section" id="problem-content"></div>
 
-<h2>코드 제출</h2>
+        <div class="editor-section">
+            <div class="editor-container">
+                <div class="selector-bar">
+                    <div style="flex-grow:1">
+                        <span style="font-size: 13px; color: var(--text-sub);">문제 선택: </span>
+                        <select id="problem-select" onchange="updateProblem()">
+                            <option value="A_PLUS_B">1000번: A+B</option>
+                            <option value="MAX_VALUE">2562번: 최댓값</option>
+                            <option value="PRIME_COUNT">1978번: 소수 찾기</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="language">
+                            <option>Java</option>
+                        </select>
+                    </div>
+                </div>
 
-<label>문제 선택</label>
-<select id="problemType">
-    <option value="A_PLUS_B">A+B</option>
-    <option value="MAX_VALUE">최댓값</option>
-    <option value="PRIME_COUNT">소수 찾기</option>
-</select>
+                <div class="user-info">
+                    사용자 식별 번호:
+                    <strong th:text="${userId}">userId</strong>
+                </div>
 
-<div class="user-info">
-    사용자 식별 번호:
-    <strong th:text="${userId}">userId</strong>
-</div>
+                <textarea id="code-editor" spellcheck="false" placeholder="여기에 Java 코드를 입력하세요."></textarea>
 
-<textarea id="code" placeholder="여기에 Java 코드를 입력하세요."></textarea>
-<br>
-<button onclick="submitCode()">제출</button>
+                <div class="button-group">
+                    <button class="btn btn-reset" onclick="resetCode()">초기화</button>
+                    <button class="btn btn-submit" onclick="submitCode()">제출하기</button>
+                </div>
+            </div>
 
-<h2>채점 진행률</h2>
+            <div class="result-container">
+                <div class="result-header">
+                    <span>실행 결과</span>
+                    <span id="judging-status">대기 중</span>
+                </div>
 
-<div class="progress-area">
-    <div class="progress-number">
-        <span id="progressText">0</span>%
+                <div class="progress-area">
+                    <div class="progress-top">
+                        <span>채점 진행률</span>
+                        <span class="progress-number"><span id="progressText">0</span>%</span>
+                    </div>
+                    <div class="progress-wrap">
+                        <div id="progressBar"></div>
+                    </div>
+                </div>
+
+                <pre id="result-display">코드를 제출하면 채점 결과가 여기에 표시됩니다.</pre>
+            </div>
+        </div>
     </div>
 
-    <div class="progress-wrap">
-        <div id="progressBar"></div>
-    </div>
-</div>
+    <script>
+        const problems = {
+            A_PLUS_B: {
+                title: "1000번: A+B",
+                time: "2 초", memory: "128 MB", ratio: "39.4%",
+                desc: "두 정수 A와 B를 입력받은 다음, A+B를 출력하는 프로그램을 작성하시오.",
+                input: "첫째 줄에 A와 B가 주어진다. (0 < A, B < 10)",
+                output: "첫째 줄에 A+B를 출력한다.",
+                ex_in: "1 2", ex_out: "3",
+                template:
+`import java.util.Scanner;
 
-<h2>채점 결과</h2>
-<pre id="resultBox"></pre>
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-<script>
-let eventSource = null;
-let currentProgress = 0;
-let progressAnimation = null;
+        int A = sc.nextInt();
+        int B = sc.nextInt();
 
-function animateProgress(targetProgress) {
-    targetProgress = Number(targetProgress);
-
-    if (progressAnimation !== null) {
-        clearInterval(progressAnimation);
+        System.out.println(A + B);
     }
+}`
+            },
+            MAX_VALUE: {
+                title: "2562번: 최댓값",
+                time: "1 초", memory: "128 MB", ratio: "45.2%",
+                desc: "9개의 서로 다른 자연수가 주어질 때, 이들 중 최댓값을 찾고 그 최댓값이 몇 번째 수인지를 구하는 프로그램을 작성하시오.",
+                input: "첫째 줄부터 아홉 번째 줄까지 한 줄에 하나의 자연수가 주어진다. 주어지는 자연수는 100 보다 작다.",
+                output: "첫째 줄에 최댓값을 출력하고, 둘째 줄에 최댓값이 몇 번째 수인지를 출력한다.",
+                ex_in: "3\n29\n38\n12\n57\n74\n40\n85\n61", ex_out: "85\n8",
+                template:
+`import java.util.Scanner;
 
-    const progressText = document.getElementById("progressText");
-    const progressBar = document.getElementById("progressBar");
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-    progressAnimation = setInterval(() => {
-        if (currentProgress >= targetProgress) {
-            clearInterval(progressAnimation);
-            progressAnimation = null;
-            return;
+        int max = -1;
+        int index = 0;
+
+        for (int i = 1; i <= 9; i++) {
+            int num = sc.nextInt();
+
+            if (num > max) {
+                max = num;
+                index = i;
+            }
         }
 
-        currentProgress++;
-
-        progressText.textContent = currentProgress;
-        progressBar.style.width = currentProgress + "%";
-    }, 20);
-}
-
-function submitCode() {
-    const code = document.getElementById("code").value;
-    const resultBox = document.getElementById("resultBox");
-
-    if (code.trim() === "") {
-        alert("코드를 입력하세요.");
-        return;
+        System.out.println(max);
+        System.out.println(index);
     }
+}`
+            },
+            PRIME_COUNT: {
+                title: "1978번: 소수 찾기",
+                time: "2 초", memory: "128 MB", ratio: "47.1%",
+                desc: "주어진 수 N개 중에서 소수가 몇 개인지 찾아서 출력하는 프로그램을 작성하시오.",
+                input: "첫째 줄에 수의 개수 N이 주어진다. N은 100이하이다. 다음으로 N개의 수가 주어지는데 수는 1,000 이하의 자연수이다.",
+                output: "주어진 수들 중 소수의 개수를 출력한다.",
+                ex_in: "4\n1 3 5 7", ex_out: "3",
+                template:
+`import java.util.Scanner;
 
-    if (eventSource !== null) {
-        eventSource.close();
-    }
+public class Main {
+    public static boolean isPrime(int n) {
+        if (n < 2) return false;
 
-    resultBox.textContent = "채점 요청 중...\n";
-    currentProgress = 0;
-
-    if (progressAnimation !== null) {
-        clearInterval(progressAnimation);
-        progressAnimation = null;
-    }
-
-    document.getElementById("progressText").textContent = "0";
-    document.getElementById("progressBar").style.width = "0%";
-
-    const encodedCode = encodeURIComponent(code);
-    const problemType = document.getElementById("problemType").value;
-    eventSource = new EventSource(
-        "/submit-stream?code=" + encodedCode + "&problemType=" + encodeURIComponent(problemType)
-    );
-    eventSource.onmessage = function(event) {
-        console.log("서버 메시지:", event.data);
-        let message = event.data;
-
-    if (message.startsWith("[PROGRESS]")) {
-        const percent = message.replace("[PROGRESS]", "");
-        animateProgress(percent);
-        return;
-    }
-
-        resultBox.textContent += message + "\n";
-        resultBox.scrollTop = resultBox.scrollHeight;
-    };
-
-    eventSource.onerror = function() {
-        if (eventSource !== null) {
-            eventSource.close();
-            eventSource = null;
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) return false;
         }
-    };
-}
-</script>
 
+        return true;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int N = sc.nextInt();
+        int count = 0;
+
+        for (int i = 0; i < N; i++) {
+            int num = sc.nextInt();
+
+            if (isPrime(num)) {
+                count++;
+            }
+        }
+
+        System.out.println(count);
+    }
+}`
+            }
+        };
+
+        let eventSource = null;
+        let currentProgress = 0;
+        let progressAnimation = null;
+
+        function updateProblem() {
+            const selected = document.getElementById("problem-select").value;
+            const data = problems[selected];
+
+            const html = `
+                <h1 class="title">${data.title}</h1>
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>시간 제한</th>
+                            <th>메모리 제한</th>
+                            <th>정답 비율</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${data.time}</td>
+                            <td>${data.memory}</td>
+                            <td>${data.ratio}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <section><h3>문제</h3><p>${data.desc}</p></section>
+                <section><h3>입력</h3><p>${data.input}</p></section>
+                <section><h3>출력</h3><p>${data.output}</p></section>
+
+                <div class="example-grid">
+                    <div class="example-box">
+                        <p>예제 입력 1</p>
+                        <pre>${data.ex_in}</pre>
+                    </div>
+                    <div class="example-box">
+                        <p>예제 출력 1</p>
+                        <pre>${data.ex_out}</pre>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("problem-content").innerHTML = html;
+            document.getElementById("code-editor").value = data.template;
+            resetResultArea();
+        }
+
+        function animateProgress(targetProgress) {
+            targetProgress = Number(targetProgress);
+
+            if (Number.isNaN(targetProgress)) return;
+            if (targetProgress < 0) targetProgress = 0;
+            if (targetProgress > 100) targetProgress = 100;
+
+            if (progressAnimation !== null) {
+                clearInterval(progressAnimation);
+            }
+
+            const progressText = document.getElementById("progressText");
+            const progressBar = document.getElementById("progressBar");
+
+            progressAnimation = setInterval(() => {
+                if (currentProgress >= targetProgress) {
+                    clearInterval(progressAnimation);
+                    progressAnimation = null;
+
+                    if (currentProgress >= 100) {
+                        const status = document.getElementById("judging-status");
+                        status.innerText = "채점 완료";
+                        status.className = "status-success";
+                    }
+
+                    return;
+                }
+
+                currentProgress++;
+
+                progressText.textContent = currentProgress;
+                progressBar.style.width = currentProgress + "%";
+            }, 20);
+        }
+
+        function submitCode() {
+            const code = document.getElementById("code-editor").value;
+            const resultDisplay = document.getElementById("result-display");
+            const status = document.getElementById("judging-status");
+            const problemType = document.getElementById("problem-select").value;
+
+            if (code.trim() === "") {
+                alert("코드를 입력하세요.");
+                return;
+            }
+
+            if (eventSource !== null) {
+                eventSource.close();
+            }
+
+            if (progressAnimation !== null) {
+                clearInterval(progressAnimation);
+                progressAnimation = null;
+            }
+
+            currentProgress = 0;
+            document.getElementById("progressText").textContent = "0";
+            document.getElementById("progressBar").style.width = "0%";
+
+            status.innerText = "채점 중...";
+            status.className = "status-running";
+            resultDisplay.textContent = "채점 요청 중...\n";
+
+            const encodedCode = encodeURIComponent(code);
+            eventSource = new EventSource(
+                "/submit-stream?code=" + encodedCode + "&problemType=" + encodeURIComponent(problemType)
+            );
+
+            eventSource.onmessage = function(event) {
+                console.log("서버 메시지:", event.data);
+
+                let message = event.data;
+
+                if (message.startsWith("[PROGRESS]")) {
+                    const percent = message.replace("[PROGRESS]", "");
+                    animateProgress(percent);
+                    return;
+                }
+
+                resultDisplay.textContent += message + "\n";
+                resultDisplay.scrollTop = resultDisplay.scrollHeight;
+
+                if (message.includes("맞았습니다") || message.includes("정답")) {
+                    status.innerText = "맞았습니다!!";
+                    status.className = "status-success";
+                } else if (message.includes("오답") || message.includes("컴파일 에러") || message.includes("런타임 에러") || message.includes("시간 초과")) {
+                    status.innerText = "채점 종료";
+                    status.className = "status-error";
+                }
+            };
+
+            eventSource.onerror = function() {
+                if (eventSource !== null) {
+                    eventSource.close();
+                    eventSource = null;
+                }
+            };
+        }
+
+        function resetCode() {
+            if (confirm("코드를 초기화하시겠습니까?")) {
+                const selected = document.getElementById("problem-select").value;
+                document.getElementById("code-editor").value = problems[selected].template;
+                resetResultArea();
+            }
+        }
+
+        function resetResultArea() {
+            if (eventSource !== null) {
+                eventSource.close();
+                eventSource = null;
+            }
+
+            if (progressAnimation !== null) {
+                clearInterval(progressAnimation);
+                progressAnimation = null;
+            }
+
+            currentProgress = 0;
+
+            document.getElementById("result-display").textContent = "코드를 제출하면 채점 결과가 여기에 표시됩니다.";
+            document.getElementById("judging-status").innerText = "대기 중";
+            document.getElementById("judging-status").className = "";
+            document.getElementById("progressText").textContent = "0";
+            document.getElementById("progressBar").style.width = "0%";
+        }
+
+        updateProblem();
+    </script>
 </body>
 </html>

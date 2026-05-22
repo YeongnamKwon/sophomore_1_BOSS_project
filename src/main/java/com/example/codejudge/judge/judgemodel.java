@@ -95,12 +95,12 @@ public class judgemodel {
 
             if (allCorrect && count == tests.size()) {
                 send.accept("[PROGRESS]100");
-                send.accept("정답입니다!");
+                send.accept("[TIME]" + String.format("%.6f s", totalRunningTime / 1000000000.0));
+                send.accept("[Memory]: " + String.format("%.2f MB", maxMemory / 1024.0 / 1024.0));
+                send.accept("[LANGUAGE]Java");
+                send.accept("[STATUS]정답입니다!!");
             }
 
-            send.accept("메모리 사용량: " + String.format("%.2f MB", maxMemory / 1024.0 / 1024.0));
-            send.accept("실행 시간: " + String.format("%.6f s", totalRunningTime / 1000000000.0));
-            send.accept("=============================");
 
         } catch (RuntimeException e) {
             log.severe(String.format("Error : %s%nLocation : %s", e, e.getStackTrace()[0]));
