@@ -83,6 +83,7 @@ public class judgemodel {
                 boolean judgeResult = j.check(runResult.output, tc.answer);
                 
                 if (!judgeResult) {
+                    allCorrect = false;
                     send.accept("Testcase " + count + ": 오답");
                     send.accept("입력값: " + tc.input);
                     send.accept("시스템 정답: " + tc.answer);
