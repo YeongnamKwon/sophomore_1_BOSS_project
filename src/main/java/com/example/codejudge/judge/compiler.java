@@ -12,7 +12,7 @@ public class compiler {
 
     public boolean compile() {
         try {
-            ProcessBuilder pb = new ProcessBuilder("javac", "Users_answercode.java");
+            ProcessBuilder pb = new ProcessBuilder("javac", "Main.java");
             Process process = pb.start();
 
             BufferedReader errorReader = new BufferedReader(

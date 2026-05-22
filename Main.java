@@ -1,14 +1,21 @@
+import java.util.Scanner;
 
-	import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-       public class Users_answercode {
+        int N = sc.nextInt();
 
-		public static void main(String[] args) {
-			Scanner scanner = new Scanner(System.in);
+        int max = sc.nextInt();
 
-               int a = scanner.nextInt();
-               int b = scanner.nextInt();
+        for (int i = 1; i < N; i++) {
+            int num = sc.nextInt();
 
-               System.out.println(a + b);
-           }
-       }
+            if (num > max) {
+                max = num;
+            }
+        }
+
+        System.out.println(max);
+    }
+}

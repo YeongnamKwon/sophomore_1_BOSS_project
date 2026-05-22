@@ -20,7 +20,7 @@ public class runner {
         try {
             long start = System.nanoTime();
 
-            ProcessBuilder pb = new ProcessBuilder("java", "Users_answercode");
+            ProcessBuilder pb = new ProcessBuilder("java", "Main");
             Process process = pb.start();
 
             long pid = process.pid();
@@ -43,6 +43,26 @@ public class runner {
 
             memoryMonitor.start();
 
+            long warmupStart = System.currentTimeMillis();
+
+            while (System.currentTimeMillis() - warmupStart < 500) {
+                long memory = getProcessMemoryWindows(pid);
+
+                if (memory > maxMemory[0]) {
+                    maxMemory[0] = memory;
+                }
+
+                if (maxMemory[0] > 0) {
+                    break;
+                }
+
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream())
             );
@@ -60,6 +80,11 @@ public class runner {
             }
 
             boolean finished = process.waitFor(2, TimeUnit.SECONDS);
+            
+            long lastMemory = getProcessMemoryWindows(pid);
+            if (lastMemory > maxMemory[0]) {
+                maxMemory[0] = lastMemory;
+            }
 
             monitoring[0] = false;
             memoryMonitor.interrupt();
@@ -118,9 +143,10 @@ public class runner {
     private long getProcessMemoryWindows(long pid) {
         try {
             ProcessBuilder pb = new ProcessBuilder(
-                    "powershell",
-                    "-Command",
-                    "(Get-Process -Id " + pid + ").WorkingSet64"
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                "(Get-Process -Id " + pid + " -ErrorAction SilentlyContinue).WorkingSet64"
             );
 
             Process process = pb.start();
