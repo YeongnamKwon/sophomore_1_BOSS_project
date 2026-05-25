@@ -119,7 +119,7 @@ cd sophomore_1_BOSS_project
 
 | 이름 | 역할 |
 |------|------|
-| 권영남 | 백엔드 채점 로직 구현, JavaScript 기반 프론트엔드 동작 로직 구현, Spring Boot - 웹 연동, 테스트케이스 관리, 실시간 채점 결과 출력, "BOSS" 프로젝트 관리, README 정리 |
+| 권영남 | 백엔드 채점 로직 구현, JavaScript 기반 프론트엔드 동작 로직 구현, Spring Boot - 웹 연동, 테스트케이스 관리, "BOSS" 프로젝트 운영, 관리, 총괄, README 정리 |
 | (팀원 추가) | (역할 추가 예정) |
 
 ---
